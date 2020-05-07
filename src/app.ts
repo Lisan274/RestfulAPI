@@ -1,6 +1,10 @@
 import express,{Application} from "express"
 
 import {MainController} from "./controllers/main.controller";
+import {ClienteController} from "./controllers/cliente.controller";
+import {PaqueteController} from "./controllers/paquete.controller";
+import {RepartidorController} from "./controllers/repartidor.controller";
+
 
 import bodyParser from "body-parser"
 import  cors from "cors";
@@ -14,11 +18,19 @@ config({path:resolve(__dirname,"../.env")});
 class App{
     public app: Application;
     public mainController: MainController;
+    public clienteController: ClienteController;
+    public paqueteController: PaqueteController;
+    public repartidorController: RepartidorController;
+    
     constructor(){
         this.app = express();
         this.setConfig();
         this.setMongoDBConfig();
         this.mainController = new MainController(this.app);
+        this.clienteController = new ClienteController(this.app);
+        this.paqueteController = new PaqueteController(this.app);
+        this.repartidorController = new RepartidorController(this.app);
+
     }
     private setConfig(){
         this.app.use(bodyParser.json({limit:"50mb"}));
