@@ -12,10 +12,10 @@ export class ClienteController{
 
         this.app.route("/cliente").post(this.prov_service.NewOne);
 
-        //this.app.route("/cliente/:id_prov")
-        //.get(this.prov_service.GetById)
+        this.app.route("/cliente/:id_prov")
+        .get(this.prov_service.GetById)
 
-        //.put(this.prov_service.Update)
-        //.delete(this.prov_service.Delete);
+        .put(this.prov_service.Update)
+        .delete(this.prov_service.Delete);
     }
 }

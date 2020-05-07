@@ -8,6 +8,7 @@ export class PaqueteController{
         this.routes();
     }
     private routes(){
+        this.app.route("/paquete/:id").get(this.prov_service.GetPaquete);
         this.app.route("/paquetes").get(this.prov_service.getAll);
 
         //this.app.route("/paquete").post(this.prov_service.NewOne);
