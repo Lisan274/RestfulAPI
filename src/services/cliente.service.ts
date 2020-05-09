@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 import { Cliente, ICliente } from "../models/cliente.model";
 import { Paquete, IPaquete } from "../models/paquete.model";
+import { PaqueteService } from "./paquete.service"
 import { MongooseDocument } from "mongoose";
 import { resolve } from "dns";
 import { json } from "body-parser";
@@ -98,6 +99,37 @@ export class ClienteService extends ClienteHelpers{
             res.status(200).json( cliente? {"successed":true, "Cliente": cliente } : {"successed":false} );
         });
     } 
+
+    public GetAllPaquetes(req:Request,res:Response){  //Funcion que busca todos los clientes con sus paquetes
+                                                        
+        Cliente.aggregate([{
+            "$lookup":{
+                from: "paquete",
+                localField:"_id",
+                foreignField:"cliente",
+                as:"paquetes"
+            }
+        }],(err:Error,data:any)=>{
+            if(err){
+                res.status(401).send(err);
+            }else{
+                res.status(200).json(data);
+            }
+        })
+    }
+
+
+ 
+    public GetPaquetesByIdCliente(req: Request, res: Response) {                            //Revisar bien y realizar cambios
+        Paquete.find().populate("cliente").exec((err: Error, paquete: IPaquete) => {
+            if (err) {
+                res.status(401).json(err);
+            } else {
+                res.status(200).json(paquete);
+            }
+
+        });
+    }
 
 }
  
