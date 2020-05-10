@@ -8,7 +8,7 @@ export class PaqueteService{
 
 
     public GetPaquete(req:Request,res:Response){
-        Paquete.findById(req.params.id).populate("cliente").exec((err:Error,paquete:IPaquete)=>{
+        Paquete.findById(req.params.id_paq).populate("cliente").exec((err:Error,paquete:IPaquete)=>{
             if(err){
                 res.status(401).json(err);
             }else{
@@ -84,6 +84,7 @@ export class PaqueteService{
             }
             res.status(200).json(paquete);
         });
-
+     
     }
 }
+    

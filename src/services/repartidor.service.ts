@@ -54,5 +54,26 @@ export class RepartidorService{
         });
     }
 
-
+    public GetRepartidor(req:Request,res:Response){
+        Repartidor.findById(req.params.id).populate("repartidor").exec((err:Error,repartidor:IRepartidor)=>{
+            if(err){
+                res.status(401).json(err);
+            }else{
+                res.status(200).json(repartidor);
+            }
+                
+        });
+    }
+    
+    public Update(req: Request,res: Response){
+        console.log("entro");
+        Repartidor.findByIdAndUpdate(req.params.id,req.body,(err:Error, repartidor:any)=>{
+            if(err){
+                res.status(401).send(err);
+            }
+            res.status(200).json( repartidor? {"updated":true} : {"updated":false} );
+        })
+    }
+ 
 }
+
