@@ -19,7 +19,7 @@ class ClienteHelpers{
         });
     }
 
-    NumberOfPaquetesBySupplier(clie: ICliente):Promise<number>{        //comprobar cuantos paquetes tiene 
+    NumberOfPaquetesBySupplier(clie: ICliente):Promise<number>{        //comprobar cuantos paquetes tiene el cliente
         return new Promise<number>( resolve => {
             Paquete.aggregate([
                 { "$match": { "cliente": clie._id }}                
