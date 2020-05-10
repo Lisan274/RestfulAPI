@@ -1,21 +1,32 @@
 import {Application} from "express";
 import {ClienteService} from "../services/cliente.service";
 
+
 export class ClienteController{
-    private prov_service: ClienteService;
+    private clie_service: ClienteService;
     constructor(private app: Application){
-        this.prov_service = new ClienteService();
+        this.clie_service = new ClienteService();
         this.routes();
     }
     private routes(){
-        this.app.route("/clientes").get(this.prov_service.getAll);
 
-        this.app.route("/cliente").post(this.prov_service.NewOne);
+        this.app.route("/cliente/:id_clie").get(this.clie_service.GetById);
+        //this.app.route("/cliente/:id_clie/paquete").get(this.clie_service.GetClientePaquetes);
+        this.app.route("/clientes").get(this.clie_service.getAll);
 
-        this.app.route("/cliente/:id_prov")
-        .get(this.prov_service.GetById)
+      
+        this.app.route("/cliente").post(this.clie_service.Login);
+        this.app.route("/cliente").get(this.clie_service.ClienteLog);
+        //this.app.route("/cliente").post(this.clie_service.ClienteLog);
+        //.get(this.clie_service.ClienteLog)
+        this.app.route("/cliente").post(this.clie_service.NewOne);
 
-        .put(this.prov_service.Update)
-        .delete(this.prov_service.Delete);
+        //this.app.route("/cliente/:correo").get(this.clie_service.Login);
+        this.app.route("/cliente/:id_clie")
+        .get(this.clie_service.GetById)
+        .put(this.clie_service.Update)
+        .delete(this.clie_service.Delete);
     }
 }
+
+        
