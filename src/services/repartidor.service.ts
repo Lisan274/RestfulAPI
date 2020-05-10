@@ -17,7 +17,7 @@ export class RepartidorService{
     
     public Update(req: Request,res: Response){
         console.log("entro");
-        Repartidor.findByIdAndUpdate(req.params.id_rep,req.body,(err:Error, repartidor:any)=>{
+        Repartidor.findByIdAndUpdate(req.params.id,req.body,(err:Error, repartidor:any)=>{
             if(err){
                 res.status(401).send(err);
             }

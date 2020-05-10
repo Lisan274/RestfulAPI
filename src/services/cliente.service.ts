@@ -47,7 +47,7 @@ export class ClienteService extends ClienteHelpers{
        const my_clie = await super.GetCliente(req.params.id_clie);
        res.status(200).send(my_clie);
     }
-
+/*
 
     public async ClienteLog(req: Request, res: Response){
         let {correo, password} = req.body;
@@ -62,7 +62,7 @@ export class ClienteService extends ClienteHelpers{
             res.status(401).json( {"mensaje": "Usuria no encontrado"} );
         }
     }
-
+*/
     
     public Login(req: Request,res: Response){
         console.log("Login");
@@ -73,7 +73,6 @@ export class ClienteService extends ClienteHelpers{
             res.status(200).json( cliente? {"cliente":true} : {"cliente":false} );
         })
     }
-    
     
  
     //Payload
