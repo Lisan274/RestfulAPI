@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import { Cliente, ICliente} from "../models/cliente.model";
-import { Paquete, IPaquete } from "../models/paquete.model";
+import { Paquete, IPaquete} from "../models/paquete.model";
 import { MongooseDocument } from "mongoose";
 import { resolve } from "dns";
 import { json } from "body-parser";
@@ -63,7 +63,7 @@ export class ClienteService extends ClienteHelpers{
         }
     }
 
-    //Payload Login
+    
     public Login(req: Request,res: Response){
         console.log("Login");
         Cliente.findById(req.params.correo, req.params.password, req.body,(err:Error, cliente:any)=>{
@@ -118,43 +118,3 @@ export class ClienteService extends ClienteHelpers{
         });
     } 
 } 
-    /*
-    public GetClientePaquetes(req:Request,res:Response){
-        Cliente.findById(req.params.id_clie).populate("paquete").exec((err:Error,paquete:IPaquete)=>{
-            if(err){
-                res.status(401).json(err);
-            }else{
-                res.status(200).json(paquete);
-            }
-                
-        });
-    }
-
-}
-*/
-//PRUEBAS
-export class PaqueteService{
-
-    GetcPaquetes(id_clie: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
-        return new Promise<ICliente>( (resolve) => {        // la promesa retorna un cliente
-            Cliente.findById(id_clie,(err:Error,cliente:ICliente)=>{
-                if(err){
-                    console.log(err);
-                }
-                resolve(cliente);
-            }); 
-        });
-    }
-    public GetCliente(req:Request,res:Response){
-        Cliente.findById(req.params.id_clie).populate("paquete").exec((err:Error,cliente:ICliente)=>{
-            if(err){
-                res.status(401).json(err);
-            }else{
-                res.status(200).json(cliente);
-            }
-                
-        });
-    }
-
-    
-}
