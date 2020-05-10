@@ -9,9 +9,9 @@ import { json } from "body-parser";
 
 class ClienteHelpers{
 
-    GetCliente(id_prov: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
+    GetCliente(id: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
         return new Promise<ICliente>( (resolve) => {        // la promesa retorna un cliente
-            Cliente.findById(id_prov,(err:Error,cliente:ICliente)=>{
+            Cliente.findById(id,(err:Error,cliente:ICliente)=>{
                 if(err){
                     console.log(err);
                 }
@@ -20,10 +20,10 @@ class ClienteHelpers{
         });
     }
 
-    NumberOfPaquetesBySupplier(prov: ICliente):Promise<number>{        //comprobar cuantos paquetes tiene 
+    NumberOfPaquetesBySupplier(cliente: ICliente):Promise<number>{        //comprobar cuantos paquetes tiene 
         return new Promise<number>( resolve => {
             Paquete.aggregate([
-                { "$match": { "cliente": prov._id }}                
+                { "$match": { "cliente": cliente._id }}                
               ],(err:Error, data:any)=>{
                 resolve(data.length);
               }) 
@@ -43,19 +43,10 @@ export class ClienteService extends ClienteHelpers{
      
     }
 
-    /*public Delete(req: Request, res: Response){
-        Cliente.findByIdAndDelete(req.params.id_prov,req.body,(err:Error, cliente:any)=>{
-            if(err){
-                res.status(401).send(err);
-            }
-            res.status(200).json( cliente? {"deleted":true} : {"deleted":false} );
-        });
-    }
-    */
    
     public async GetById(req: Request,res: Response){        
-       const my_prov = await super.GetCliente(req.params.id_prov);
-       res.status(200).send(my_prov);
+       const my_clien = await super.GetCliente(req.params._id);
+       res.status(200).send(my_clien);
     }
 
     //Payload
@@ -71,16 +62,16 @@ export class ClienteService extends ClienteHelpers{
 
     public async Delete(req: Request, res: Response){
 
-        const Prov = await super.GetCliente(req.params.id_prov);
-        const npaquetes:number = Prov? await super.NumberOfPaquetesBySupplier(Prov) : 0;        
+        const cliente = await super.GetCliente(req.params.id);
+        const npaquetes: number = cliente ? await super.NumberOfPaquetesBySupplier(cliente) : 0;        
 
         if(npaquetes > 0){
-            res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id_prov} tiene ${npaquetes} paquetes`});
+            res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id} tiene ${npaquetes} paquetes`});
         }else{
-            if(Prov == undefined){
-                res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id_prov} No existe`});         
+            if (cliente == undefined){
+                res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id} No existe`});         
             }else{
-                Cliente.findByIdAndDelete(req.params.id_prov,req.body,(err:Error, cliente:any)=>{
+                Cliente.findByIdAndDelete(req.params.id,req.body,(err:Error, cliente:any)=>{
                     if(err){
                         res.status(401).send(err);
                     }
@@ -100,7 +91,7 @@ export class ClienteService extends ClienteHelpers{
         });
     } 
 
-    public GetAllPaquetes(req:Request,res:Response){  //Funcion que busca todos los clientes con sus paquetes
+    public GetAllPaquetesCliente(req:Request,res:Response){  //Funcion que busca todos los clientes con sus paquetes
                                                         
         Cliente.aggregate([{
             "$lookup":{
