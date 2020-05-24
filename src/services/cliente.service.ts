@@ -9,9 +9,9 @@ import { json } from "body-parser";
 
 class ClienteHelpers{
 
-    GetCliente(id: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
+    GetCliente(id_clie: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
         return new Promise<ICliente>( (resolve) => {        // la promesa retorna un cliente
-            Cliente.findById(id,(err:Error,cliente:ICliente)=>{
+            Cliente.findById(id_clie,(err:Error,cliente:ICliente)=>{
                 if(err){
                     console.log(err);
                 }
@@ -43,16 +43,42 @@ export class ClienteService extends ClienteHelpers{
      
     }
 
-   
     public async GetById(req: Request,res: Response){        
-       const my_clien = await super.GetCliente(req.params._id);
-       res.status(200).send(my_clien);
+       const my_clie = await super.GetCliente(req.params.id_clie);
+       res.status(200).send(my_clie);
     }
+/*
 
+    public async ClienteLog(req: Request, res: Response){
+        let {correo, password} = req.body;
+        const p = await Cliente.find({ correo: correo});
+            if(p){
+                if(password){
+                    res.status(200).json( {"mensaje": "Login correcto"});
+                    console.log("Login");
+                } else
+                res.status(401).json({"mensaje": "Contraseña incorrecta"});
+            } else{
+            res.status(401).json( {"mensaje": "Usuria no encontrado"} );
+        }
+    }
+*/
+    
+    public Login(req: Request,res: Response){
+        console.log("Login");
+        Cliente.findById(req.params.correo, req.params.password, req.body,(err:Error, cliente:any)=>{
+            if(err){
+                res.status(401).send(err);
+            }
+            res.status(200).json( cliente? {"cliente":true} : {"cliente":false} );
+        })
+    }
+    
+ 
     //Payload
     public Update(req: Request,res: Response){
         console.log("entro");
-        Cliente.findByIdAndUpdate(req.params.id_prov,req.body,(err:Error, cliente:any)=>{
+        Cliente.findByIdAndUpdate(req.params.id_clie,req.body,(err:Error, cliente:any)=>{
             if(err){
                 res.status(401).send(err);
             }
@@ -111,7 +137,7 @@ export class ClienteService extends ClienteHelpers{
 
 
  
-    public GetPaquetesByIdCliente(req: Request, res: Response) {                            //Revisar bien y realizar cambios
+    public GetPaquetesByIdCliente(req: Request, res: Response) {            //Revisar bien y realizar cambios
         Paquete.find().populate("cliente").exec((err: Error, paquete: IPaquete) => {
             if (err) {
                 res.status(401).json(err);

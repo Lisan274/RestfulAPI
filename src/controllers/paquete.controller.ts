@@ -16,6 +16,8 @@ export class PaqueteController{
         this.app.route("/paquetes/tipo1").get(this.paquete_service.Gettype_1);
         this.app.route("/paquetes/tipo2").get(this.paquete_service.Gettype_2);
         this.app.route("/paquetes/tipo3").get(this.paquete_service.Gettype_3);
+        this.app.route("/cliente/paquetes/:id").get(this.paquete_service.getByCliente);
+        this.app.route("/repartidor/paquetes/:id").get(this.paquete_service.getByRepartidor);
         
     
     }

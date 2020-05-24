@@ -11,7 +11,8 @@ export class RepartidorController{
         this.app.route("/repartidores").get(this.rep_service.getAll);
         this.app.route("repartidor/paquetes").get(this.rep_service.GetAllPaquetesRepartidor);
         this.app.route("/repartidor").post(this.rep_service.NewOne);
-        this.app.route("/repartidor/paquetes/:id_prov").get(this.rep_service.GetPaquetesByIdRepartidor);
-        
+        this.app.route("/repartidor/:id").get(this.rep_service.GetRepartidor);
+        this.app.route("/repartidor/:id").put(this.rep_service.Update);
+
     }
 }
