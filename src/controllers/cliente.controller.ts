@@ -17,7 +17,6 @@ export class ClienteController{
         .put(this.clie_service.Update)
         .delete(this.clie_service.Delete);
         this.app.route("/clientes/paquetes").get(this.clie_service.GetAllPaquetesCliente);
-        this.app.route("/cliente/paquetes/:id_clie").get(this.clie_service.GetPaquetesByIdCliente);
     }
 }
 

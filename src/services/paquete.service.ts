@@ -1,13 +1,31 @@
 import {Request, Response, query} from "express";
 import { Paquete, IPaquete } from "../models/paquete.model";
 import { ClienteService} from "./cliente.service"
+import {RepartidorService} from "./repartidor.service"
 import { MongooseDocument } from "mongoose";
 import { url } from "inspector";
 
-export class PaqueteService{
+class PaqueteHelpers {
+
+    GetPaquete(filter: any): Promise<IPaquete> {
+        return new Promise<IPaquete>((resolve) => {
+            Paquete.find(filter, (err: Error, paquete: IPaquete) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    resolve(paquete);
+                }
+            });
+        });
+    }
+}
 
 
-    public GetPaquete(req:Request,res:Response){
+
+export class PaqueteService extends PaqueteHelpers{
+
+
+   /* public GetPaquete(req:Request,res:Response){
         Paquete.findById(req.params.id_paq).populate("cliente").exec((err:Error,paquete:IPaquete)=>{
             if(err){
                 res.status(401).json(err);
@@ -16,7 +34,7 @@ export class PaqueteService{
             }
                 
         });
-    }
+    }*/
 
     public getAll(req: Request,res: Response){
         Paquete.find({},(err: Error, paquete: MongooseDocument)=>{
@@ -85,6 +103,16 @@ export class PaqueteService{
             res.status(200).json(paquete);
         });
      
+    }
+
+    public async getByCliente(req: Request, res: Response) {
+        const paquetes: any = await super.GetPaquete({ cliente: req.params.id });
+        res.status(200).json(paquetes);
+    }
+
+    public async getByRepartidor(req: Request, res: Response) {
+        const paquetes: any = await super.GetPaquete({ repartidor: req.params.id });
+        res.status(200).json(paquetes);
     }
 }
     
