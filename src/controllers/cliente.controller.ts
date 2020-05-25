@@ -13,7 +13,6 @@ export class ClienteController{
         this.app.route("/clientes").get(this.clie_service.getAll);
         this.app.route("/cliente/Login").post(this.clie_service.Login);
         this.app.route("/cliente/Registro").post(this.clie_service.NewOne);
-        this.app.route("/Registro").post(this.clie_service.Registro);
 
         this.app.route("/cliente/:id_clie")
         .get(this.clie_service.GetById)

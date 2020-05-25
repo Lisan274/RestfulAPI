@@ -13,7 +13,7 @@ export class RepartidorController{
         this.app.route("/repartidor/:id").put(this.rev_service.Update);
         this.app.route("/repartidor/Login").post(this.rev_service.Login);
         this.app.route("/repartidor/Registro").post(this.rev_service.NewOne);
-        this.app.route("/cliente/:id_clie").get(this.rev_service.Delete);
+        this.app.route("/repartidor/:id").delete(this.rev_service.Delete);
 
     }
 }

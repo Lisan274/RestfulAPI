@@ -91,7 +91,7 @@ export class RepartidorService extends RepartidorHelpers{
     public NewOne(req: Request, res: Response) {
         Repartidor.find({correo: req.body.correo}, function (err, docs){
             if(docs.length>0){
-                res.status(401).send("error");
+                res.status(401).send("Este usuario ya esta registrado");
             }else{
                 const p = new Repartidor(req.body);
                 p.save((err: Error, repartidor: IRepartidor) => {
