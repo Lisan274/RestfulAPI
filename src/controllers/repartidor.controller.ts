@@ -8,13 +8,6 @@ export class RepartidorController{
         this.routes();
     }
     private routes(){
-<<<<<<< HEAD
-        this.app.route("/repartidores").get(this.rep_service.getAll);
-        this.app.route("repartidor/paquetes").get(this.rep_service.GetAllPaquetesRepartidor);
-        this.app.route("/repartidor").post(this.rep_service.NewOne);
-        this.app.route("/repartidor/:id").get(this.rep_service.GetRepartidor);
-        this.app.route("/repartidor/:id").put(this.rep_service.Update);
-=======
         this.app.route("/repartidores").get(this.rev_service.getAll);
         this.app.route("/repartidores/paquetes").get(this.rev_service.getAllWPackage);
         this.app.route("/repartidor/:id_rep").get(this.rev_service.GetById);
@@ -22,7 +15,6 @@ export class RepartidorController{
         this.app.route("/repartidor/Login").post(this.rev_service.Login);
         this.app.route("/repartidor/Registro").post(this.rev_service.NewOne);
         this.app.route("/repartidor/:id_rep").delete(this.rev_service.Delete);
->>>>>>> Lisandro
 
     }
 }
