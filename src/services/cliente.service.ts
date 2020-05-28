@@ -1,7 +1,6 @@
 import {Request, Response} from "express";
-import { Cliente, ICliente } from "../models/cliente.model";
-import { Paquete, IPaquete } from "../models/paquete.model";
-import { PaqueteService } from "./paquete.service"
+import { Cliente, ICliente} from "../models/cliente.model";
+import { Paquete, IPaquete} from "../models/paquete.model";
 import { MongooseDocument } from "mongoose";
 import { resolve } from "dns";
 import { json } from "body-parser";
@@ -9,6 +8,21 @@ import { json } from "body-parser";
 
 class ClienteHelpers{
 
+<<<<<<< HEAD
+=======
+    GetClient(filter: any): Promise<ICliente> {
+        return new Promise<ICliente>((resolve) => {
+            Cliente.find(filter, (err: Error, cliente: ICliente) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    resolve(cliente);
+                }
+            });
+        });
+    }
+
+>>>>>>> Lisandro
     GetCliente(id_clie: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
         return new Promise<ICliente>( (resolve) => {        // la promesa retorna un cliente
             Cliente.findById(id_clie,(err:Error,cliente:ICliente)=>{
@@ -20,16 +34,17 @@ class ClienteHelpers{
         });
     }
 
-    NumberOfPaquetesBySupplier(cliente: ICliente):Promise<number>{        //comprobar cuantos paquetes tiene 
+    NumberOfPaquetesBySupplier(clie: ICliente):Promise<number>{        //comprobar cuantos paquetes tiene el cliente
         return new Promise<number>( resolve => {
             Paquete.aggregate([
-                { "$match": { "cliente": cliente._id }}                
+                { "$match": { "cliente": clie._id }}                
               ],(err:Error, data:any)=>{
                 resolve(data.length);
               }) 
         });
     }
 }
+
 
 export class ClienteService extends ClienteHelpers{
 
@@ -88,16 +103,16 @@ export class ClienteService extends ClienteHelpers{
 
     public async Delete(req: Request, res: Response){
 
-        const cliente = await super.GetCliente(req.params.id);
-        const npaquetes: number = cliente ? await super.NumberOfPaquetesBySupplier(cliente) : 0;        
+        const Clie = await super.GetCliente(req.params.id_clie);
+        const npaquetes:number = Clie? await super.NumberOfPaquetesBySupplier(Clie) : 0;        
 
         if(npaquetes > 0){
-            res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id} tiene ${npaquetes} paquetes`});
+            res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id_clie} tiene ${npaquetes} paquetes`});
         }else{
-            if (cliente == undefined){
-                res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id} No existe`});         
+            if(Clie == undefined){
+                res.status(200).json({"deleted":false,"message":`El cliente ${req.params.id_clie} No existe`});         
             }else{
-                Cliente.findByIdAndDelete(req.params.id,req.body,(err:Error, cliente:any)=>{
+                Cliente.findByIdAndDelete(req.params.id_clie,req.body,(err:Error, cliente:any)=>{
                     if(err){
                         res.status(401).send(err);
                     }
@@ -107,24 +122,31 @@ export class ClienteService extends ClienteHelpers{
         }        
     }
 
-    public NewOne(req: Request, res: Response){
-        const p = new Cliente(req.body);
-        p.save((err:Error, cliente: ICliente)=>{
-            if(err){
-                res.status(401).send(err);
-            }
-            res.status(200).json( cliente? {"successed":true, "Cliente": cliente } : {"successed":false} );
+    public NewOne(req: Request, res: Response) {
+        Cliente.find({correo: req.body.correo}, function (err, docs){
+            if(docs.length>0){
+                res.status(401).send("Este usuario ya esta registrado");
+            }else{
+                const p = new Cliente(req.body);
+                p.save((err: Error, cliente: ICliente) => {
+                    if(err){
+                        res.status(401).send(err);
+                    }
+                    res.status(200).json( cliente? {"successed":true, "Cliente": cliente } : {"successed":false} );
+                });
+            } 
         });
+
     } 
 
-    public GetAllPaquetesCliente(req:Request,res:Response){  //Funcion que busca todos los clientes con sus paquetes
-                                                        
+    public getAllWPackage(req:Request, res:Response){
+
         Cliente.aggregate([{
             "$lookup":{
-                from: "paquete",
+                from: "paquetes",
                 localField:"_id",
                 foreignField:"cliente",
-                as:"paquetes"
+                as: "l"
             }
         }],(err:Error,data:any)=>{
             if(err){
@@ -136,6 +158,7 @@ export class ClienteService extends ClienteHelpers{
     }
 
 
+<<<<<<< HEAD
  
     public GetPaquetesByIdCliente(req: Request, res: Response) {            //Revisar bien y realizar cambios
         Paquete.find().populate("cliente").exec((err: Error, paquete: IPaquete) => {
@@ -150,3 +173,6 @@ export class ClienteService extends ClienteHelpers{
 
 }
  
+=======
+} 
+>>>>>>> Lisandro

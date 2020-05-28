@@ -1,5 +1,6 @@
 import mongoose = require("mongoose");
 
+
 export interface ICliente extends mongoose.Document { 
     name: string;
     correo: string;
