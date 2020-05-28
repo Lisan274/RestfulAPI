@@ -82,12 +82,33 @@ export class PaqueteService extends PaqueteHelpers{
 
     public getAll(req: Request,res: Response){
         Paquete.find({},(err: Error, paquete: MongooseDocument)=>{
-            if(err){
-                res.status(401).send(err);
-            }
-            res.status(200).json(paquete);
+            Paquete.aggregate([
+                {
+                    "$lookup":{
+                        from: "clientes",
+                        localField:"clienteEmisor",
+                        foreignField:"_id",
+                        as: "clienteEmisor"
+                    }
+                },
+                {
+                    "$lookup":{
+                        from: "clientes",
+                        localField:"clienteReceptor",
+                        foreignField:"_id",
+                        as: "clienteReceptor"
+                    }
+                },
+            
+            ], (err: Error, data:any)=>{
+                if(err){
+                    res.status(401).send(err);
+                }else{
+                    res.status(200).json(data);
+                }    
+            })
+    
         });
-     
     }
 
     public NewOne(req: Request, res: Response) {
