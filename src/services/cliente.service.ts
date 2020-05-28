@@ -8,6 +8,18 @@ import { json } from "body-parser";
 
 class ClienteHelpers{
 
+    GetClient(filter: any): Promise<ICliente> {
+        return new Promise<ICliente>((resolve) => {
+            Cliente.find(filter, (err: Error, cliente: ICliente) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    resolve(cliente);
+                }
+            });
+        });
+    }
+
     GetCliente(id_clie: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
         return new Promise<ICliente>( (resolve) => {        // la promesa retorna un cliente
             Cliente.findById(id_clie,(err:Error,cliente:ICliente)=>{
@@ -107,15 +119,40 @@ export class ClienteService extends ClienteHelpers{
         }        
     }
 
-    public NewOne(req: Request, res: Response){
-        const p = new Cliente(req.body);
-        p.save((err:Error, cliente: ICliente)=>{
+    public NewOne(req: Request, res: Response) {
+        Cliente.find({correo: req.body.correo}, function (err, docs){
+            if(docs.length>0){
+                res.status(401).send("Este usuario ya esta registrado");
+            }else{
+                const p = new Cliente(req.body);
+                p.save((err: Error, cliente: ICliente) => {
+                    if(err){
+                        res.status(401).send(err);
+                    }
+                    res.status(200).json( cliente? {"successed":true, "Cliente": cliente } : {"successed":false} );
+                });
+            } 
+        });
+
+    } 
+
+    public getAllWPackage(req:Request, res:Response){
+
+        Cliente.aggregate([{
+            "$lookup":{
+                from: "paquetes",
+                localField:"_id",
+                foreignField:"cliente",
+                as: "l"
+            }
+        }],(err:Error,data:any)=>{
             if(err){
                 res.status(401).send(err);
+            }else{
+                res.status(200).json(data);
             }
-            res.status(200).json( cliente? {"successed":true, "Cliente": cliente } : {"successed":false} );
-        });
-    }  
+        })
+    }
 
 
 } 

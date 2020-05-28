@@ -6,7 +6,7 @@ import { MongooseDocument } from "mongoose";
 class RepartidorHelpers{
 
 
-    GetRepartidor(filter: any): Promise<IRepartidor> {
+    /*GetRepartidor(filter: any): Promise<IRepartidor> {
         return new Promise<IRepartidor>((resolve) => {
             Repartidor.find(filter, (err: Error, repartidor: IRepartidor) => {
                 if (err) {
@@ -16,7 +16,19 @@ class RepartidorHelpers{
                 }
             });
         });
+    }*/
+
+    GetRepartidor(id_rep: string):Promise<IRepartidor>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
+        return new Promise<IRepartidor>( (resolve) => {        // la promesa retorna un cliente
+            Repartidor.findById(id_rep,(err:Error,repartidor:IRepartidor)=>{
+                if(err){
+                    console.log(err);
+                }
+                resolve(repartidor);
+            }); 
+        });
     }
+
 
     NumberOfPaquetesBySupplier(rep: IRepartidor):Promise<number>{        //comprobar cuantos paquetes tiene el repartidor
         return new Promise<number>( resolve => {
@@ -105,7 +117,25 @@ export class RepartidorService extends RepartidorHelpers{
 
     } 
 
-    
+    public getAllWPackage(req:Request, res:Response){
+
+        Repartidor.aggregate([{
+            "$lookup":{
+                from: "paquetes",
+                localField:"_id",
+                foreignField:"repartidor",
+                as: "l"
+            }
+        }],(err:Error,data:any)=>{
+            if(err){
+                res.status(401).send(err);
+            }else{
+                res.status(200).json(data);
+            }
+        })
+
+    }
+
 
 }
 

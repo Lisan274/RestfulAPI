@@ -9,11 +9,15 @@ export class PaqueteController{
     }
     private routes(){
         this.app.route("/paquete/:id").delete(this.paq_service.Delete);
-        
         this.app.route("/paquetes").get(this.paq_service.getAll);
         this.app.route("/paquete").post(this.paq_service.NewOne);
         this.app.route("/paquete/:id").get(this.paq_service.GetPaqueteId);
-        this.app.route("/paquete/:tipo_paquete/:n").get(this.paq_service.GetTipoPaquete);
+        this.app.route("/paquete/tipo_paquete/:n").get(this.paq_service.GetType);
+        this.app.route("/cliente/paquetes/:id").get(this.paq_service.GetPaquetesCliente);
+        this.app.route("/repartidor/paquetes/:id").get(this.paq_service.GetPaquetesRepartidor);
+        
+        
+
     }   
     
 }
