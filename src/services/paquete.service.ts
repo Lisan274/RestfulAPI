@@ -1,9 +1,9 @@
-import {Request, Response, query} from "express";
+import {Request, Response} from "express";
 import { Paquete, IPaquete } from "../models/paquete.model";
-import { ClienteService} from "./cliente.service"
-import {RepartidorService} from "./repartidor.service"
+import { Repartidor, IRepartidor } from "../models/repartidor.model";
+import { Cliente, ICliente } from "../models/cliente.model";
+import { ITipoCliente } from "../models/tipoCliente.model";
 import { MongooseDocument } from "mongoose";
-import { url } from "inspector";
 
 class PaqueteHelpers {
 
@@ -18,85 +18,188 @@ class PaqueteHelpers {
             });
         });
     }
+
 }
 
+/*GetPaquete(id_paq: string):Promise<IPaquete>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
+    return new Promise<IPaquete>( (resolve) => {        // la promesa retorna un cliente
+        Paquete.findById(id_paq,(err:Error, paquete:IPaquete)=>{
+            if(err){
+                console.log(err);
+            }
+            resolve(paquete);
+        }); 
+    });
+}
+}*/
 
 
 export class PaqueteService extends PaqueteHelpers{
 
-
-   /* public GetPaquete(req:Request,res:Response){
-        Paquete.findById(req.params.id_paq).populate("cliente").exec((err:Error,paquete:IPaquete)=>{
+    public GetPaqueteId(req: Request,res: Response){
+        if (!req.params.id){
+            res.status(401).send({data: "error"});
+        }
+        let ObjectId = require('mongoose').Types.ObjectId;
+        Paquete.aggregate([
+            { "$match": {"_id": ObjectId(req.params.id)} },
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteEmisor",
+                    foreignField:"_id",
+                    as: "clienteEmisor"
+                }
+            },
+            { $unwind:"$clienteEmisor"},{
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteReceptor",
+                    foreignField:"_id",
+                    as: "clienteReceptor"
+                }
+            },
+            { $unwind:"$clienteReceptor"},
+        ], (err: Error, data:any)=>{
             if(err){
-                res.status(401).json(err);
+                res.status(401).send(err);
             }else{
-                res.status(200).json(paquete);
+                res.status(200).json(data);
+            }    
+        })
+
+    }
+
+
+    public Delete(req: Request, res: Response){
+        Paquete.findByIdAndDelete(req.params.id_paq,req.body,(err:Error, cliente:any)=>{
+            if(err){
+                res.status(401).send(err);
             }
-                
+            res.status(200).json( cliente? {"deleted":true} : {"deleted":false} );
         });
-    }*/
+    }
 
     public getAll(req: Request,res: Response){
         Paquete.find({},(err: Error, paquete: MongooseDocument)=>{
-            if(err){
-                res.status(401).send(err);
-            }
-            res.status(200).json(paquete);
+            Paquete.aggregate([
+                {
+                    "$lookup":{
+                        from: "clientes",
+                        localField:"clienteEmisor",
+                        foreignField:"_id",
+                        as: "clienteEmisor"
+                    }
+                },
+                {
+                    "$lookup":{
+                        from: "clientes",
+                        localField:"clienteReceptor",
+                        foreignField:"_id",
+                        as: "clienteReceptor"
+                    }
+                },
+            
+            ], (err: Error, data:any)=>{
+                if(err){
+                    res.status(401).send(err);
+                }else{
+                    res.status(200).json(data);
+                }    
+            })
+    
         });
-     
-    }
-
-    public Update(req: Request, res: Response) {
-        Paquete.findByIdAndUpdate(req.params.id, req.body, (err: Error, paquete: any) => {
-            if (err) {
-                res.status(401).send(err);
-            }
-            res.status(200).json(paquete ? { "updated": true } : { "updated": false });
-        })
-
-    }
-
-    public Delete(req: Request, res: Response) {
-        Paquete.findByIdAndDelete(req.params.id, req.body, (err: Error, paquete: any) => {
-            if (err) {
-                res.status(401).send(err);
-            }
-            res.status(200).json(paquete ? { "deleted": true } : { "deleted": false });
-        })
     }
 
     public NewOne(req: Request, res: Response) {
-        const p = new Paquete(req.body);
-        p.save((err: Error, paquete: IPaquete) => {
-            if (err) {
-                res.status(401).send(err);
+        Repartidor.find().lean().exec(function (error, repartidores) {
+            if(error){
+                res.status(401).send(error);
             }
-            res.status(200).json(paquete ? { "successed": true, "Paquete": paquete } : { "successed": false });
+            req.body.repartidor = repartidores[Math.floor(Math.random() * repartidores.length)]._id
+            const p = new Paquete(req.body);
+            p.save((err: Error, paquete: IPaquete) => {
+                if (err) {
+                    res.status(401).send(err);
+                }
+                res.status(200).json(paquete ? { "successed": true, "Paquete": paquete } : { "successed": false });
+            })
+        });
+    }
+
+    public GetPaquetesCliente(req: Request,res: Response){
+        if (!req.params.id){
+            return res.status(401).send({data: "error"});
+        }
+        let ObjectId = require('mongoose').Types.ObjectId;
+        Paquete.aggregate([
+            { "$match": {"clienteEmisor": ObjectId(req.params.id)} },
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteEmisor",
+                    foreignField:"_id",
+                    as: "clienteEmisor"
+                }
+            },
+            
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteReceptor",
+                    foreignField:"_id",
+                    as: "clienteReceptor"
+                }
+            },
+            
+        ], (err: Error, data:any)=>{
+            if(err){
+                return res.status(401).send(err);
+            }else{
+                return res.status(200).json(data);
+            }    
         })
+
     }
 
-    public Gettype_1(req: Request, res: Response){
-        Paquete.find({tipo_paquete:1}, (err: Error, paquete: MongooseDocument) => {
-            if (err) {
+    public GetPaquetesRepartidor(req: Request,res: Response){
+        if (!req.params.id){
+            res.status(401).send({data: "error"});
+        }
+        let ObjectId = require('mongoose').Types.ObjectId;
+        Paquete.aggregate([
+            { "$match": {"repartidor": ObjectId(req.params.id)} },
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteEmisor",
+                    foreignField:"_id",
+                    as: "clienteEmisor"
+                }
+            },
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteReceptor",
+                    foreignField:"_id",
+                    as: "clienteReceptor"
+                }
+            },
+        ], (err: Error, data:any)=>{
+            if(err){
                 res.status(401).send(err);
-            }
-            res.status(200).json(paquete);
-        });
+            }else{
+                res.status(200).json(data);
+            }    
+        })
 
     }
 
-    public Gettype_2(req: Request, res: Response) {
-        Paquete.find({ tipo_paquete: 2 }, (err: Error, paquete: MongooseDocument) => {
-            if (err) {
-                res.status(401).send(err);
-            }
-            res.status(200).json(paquete);
-        });
-
-    }
-    
-    public Gettype_3(req: Request, res: Response) {
-        Paquete.find({ tipo_paquete: 3 }, (err: Error, paquete: MongooseDocument) => {
+    public GetTipoPaquete (req: Request, res: Response) {
+        if (!req.params.n){
+            res.status(401).send({data: "error"});
+        }
+        Paquete.find({tipo_paquete: parseInt(req.params.n)}, (err: Error, paquete: MongooseDocument) => {
             if (err) {
                 res.status(401).send(err);
             }
@@ -105,14 +208,40 @@ export class PaqueteService extends PaqueteHelpers{
      
     }
 
-    public async getByCliente(req: Request, res: Response) {
-        const paquetes: any = await super.GetPaquete({ cliente: req.params.id });
-        res.status(200).json(paquetes);
+    public GetType(req: Request,res: Response){ //Tuvimos que cambiar el endpoint ya que con el de arriba, 
+        if (!req.params.n){                     //Teníamos errores en el frontend
+            return res.status(401).send({data: "error"});
+        }
+        let ObjectId = require('mongoose').Types.ObjectId;
+        Paquete.aggregate([
+            { "$match": {"tipo_paquete": parseInt(req.params.n)} },
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteEmisor",
+                    foreignField:"_id",
+                    as: "clienteEmisor"
+                }
+            },
+            
+            {
+                "$lookup":{
+                    from: "clientes",
+                    localField:"clienteReceptor",
+                    foreignField:"_id",
+                    as: "clienteReceptor"
+                }
+            },
+            
+        ], (err: Error, data:any)=>{
+            if(err){
+                return res.status(401).send(err);
+            }else{
+                console.log("AQUI")
+                return res.status(200).json(data);
+            }    
+        })
+
     }
 
-    public async getByRepartidor(req: Request, res: Response) {
-        const paquetes: any = await super.GetPaquete({ repartidor: req.params.id });
-        res.status(200).json(paquetes);
-    }
 }
-    
