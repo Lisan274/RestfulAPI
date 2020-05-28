@@ -11,20 +11,13 @@ export class ClienteController{
     private routes(){
 
         this.app.route("/clientes").get(this.clie_service.getAll);
-<<<<<<< HEAD
-=======
         this.app.route("/clientes/paquetes").get(this.clie_service.getAllWPackage);
->>>>>>> Lisandro
         this.app.route("/cliente/Login").post(this.clie_service.Login);
         this.app.route("/cliente/Registro").post(this.clie_service.NewOne);
         this.app.route("/cliente/:id_clie")
         .get(this.clie_service.GetById)
         .put(this.clie_service.Update)
         .delete(this.clie_service.Delete);
-<<<<<<< HEAD
-        this.app.route("/clientes/paquetes").get(this.clie_service.GetAllPaquetesCliente);
-=======
->>>>>>> Lisandro
     }
 }
 

@@ -8,8 +8,6 @@ import { json } from "body-parser";
 
 class ClienteHelpers{
 
-<<<<<<< HEAD
-=======
     GetClient(filter: any): Promise<ICliente> {
         return new Promise<ICliente>((resolve) => {
             Cliente.find(filter, (err: Error, cliente: ICliente) => {
@@ -22,7 +20,6 @@ class ClienteHelpers{
         });
     }
 
->>>>>>> Lisandro
     GetCliente(id_clie: string):Promise<ICliente>{        //obtener el objeto cliente, consulta al cluste por eso es una promesa
         return new Promise<ICliente>( (resolve) => {        // la promesa retorna un cliente
             Cliente.findById(id_clie,(err:Error,cliente:ICliente)=>{
@@ -158,21 +155,4 @@ export class ClienteService extends ClienteHelpers{
     }
 
 
-<<<<<<< HEAD
- 
-    public GetPaquetesByIdCliente(req: Request, res: Response) {            //Revisar bien y realizar cambios
-        Paquete.find().populate("cliente").exec((err: Error, paquete: IPaquete) => {
-            if (err) {
-                res.status(401).json(err);
-            } else {
-                res.status(200).json(paquete);
-            }
-
-        });
-    }
-
-}
- 
-=======
 } 
->>>>>>> Lisandro
