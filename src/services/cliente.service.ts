@@ -142,7 +142,7 @@ export class ClienteService extends ClienteHelpers{
             "$lookup":{
                 from: "paquetes",
                 localField:"_id",
-                foreignField:"cliente",
+                foreignField:"clienteEmisor",
                 as: "l"
             }
         }],(err:Error,data:any)=>{

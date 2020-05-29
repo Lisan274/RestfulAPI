@@ -4,8 +4,7 @@ import {MainController} from "./controllers/main.controller";
 import {ClienteController} from "./controllers/cliente.controller";
 import {PaqueteController} from "./controllers/paquete.controller";
 import {RepartidorController} from "./controllers/repartidor.controller";
-import {ClienteReceptorController} from "./controllers/cliente_receptor.controller";
- 
+
 import bodyParser from "body-parser"
 import  cors from "cors";
 import mongoose from "mongoose";
@@ -21,7 +20,7 @@ class App{
     public clienteController: ClienteController;
     public paqueteController: PaqueteController;
     public repartidorController: RepartidorController;
-    public clienteReceptorController: ClienteReceptorController;
+    
     
     constructor(){
         this.app = express();
@@ -31,7 +30,7 @@ class App{
         this.clienteController = new ClienteController(this.app);
         this.paqueteController = new PaqueteController(this.app);
         this.repartidorController = new RepartidorController(this.app);
-        this.clienteReceptorController = new ClienteReceptorController(this.app);
+        
     }
     private setConfig(){
         this.app.use(bodyParser.json({limit:"50mb"}));

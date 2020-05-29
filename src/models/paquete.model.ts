@@ -4,7 +4,7 @@ import { ITipoCliente } from "./tipoCliente.model";
 
 export interface IPaquete extends mongoose.Document { 
     name: string;
-    peso: number;
+    peso: String;
     tipo_paquete: number;
     estado_envio: Boolean;
     clienteEmisor: ITipoCliente;
@@ -14,7 +14,7 @@ export interface IPaquete extends mongoose.Document {
 
 const PaqueteSchema = new mongoose.Schema({
     name: { type: String, required: true},
-    peso: {type: Number, required: true},
+    peso: {type: String, required: true},
     tipo_paquete: {type: Number, required: true},
     estado_envio: {type: Boolean, required: false},
     clienteEmisor: { type: mongoose.Schema.Types.ObjectId, ref: "clienteEmisor" },
